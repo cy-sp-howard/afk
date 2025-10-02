@@ -15,9 +15,12 @@ namespace BhModule.Afk
     {
         private readonly AfkModule module;
         public SettingEntry<bool> KeepAlive { get; private set; }
+        public SettingEntry<int> KeepAliveInterval { get; private set; }
         public SettingEntry<KeyBinding> KeepAliveToggleKey { get; private set; }
         public SettingEntry<KeyBinding> KeepAliveButton1 { get; private set; }
         public SettingEntry<KeyBinding> KeepAliveButton2 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton3 { get; private set; }
+        public SettingEntry<KeyBinding> HealButton { get; private set; }
         public ModuleSettings(AfkModule module, SettingCollection settings)
         {
             this.module = module;
@@ -26,9 +29,16 @@ namespace BhModule.Afk
         private void InitUISetting(SettingCollection settings)
         {
             this.KeepAlive = settings.DefineSetting(nameof(this.KeepAlive), true, () => "Keep Character Alive.", () => "");
+            this.KeepAliveInterval = settings.DefineSetting(nameof(this.KeepAliveInterval), 5, () => $"Use Skill Interval - {this.KeepAliveInterval.Value}s", () => "");
+            this.KeepAliveInterval.SetRange(3, 120);
+            this.KeepAliveInterval.SettingChanged += delegate
+            {
+                module.BotService.KeepAliveTimer.Interval = this.KeepAliveInterval.Value * 1000;
+            };
             this.KeepAliveToggleKey = settings.DefineSetting(nameof(this.KeepAliveToggleKey), new KeyBinding(Keys.P), () => "Toggle Keep Alive", () => "");
             this.KeepAliveButton1 = settings.DefineSetting(nameof(this.KeepAliveButton1), new KeyBinding(Keys.Tab), () => "Trigger Button 1", () => "");
-            this.KeepAliveButton2 = settings.DefineSetting(nameof(this.KeepAliveButton2), new KeyBinding(Keys.D1), () => "Trigger Button 2", () => "");
+            this.KeepAliveButton2 = settings.DefineSetting(nameof(this.KeepAliveButton2), new KeyBinding(Keys.R), () => "Trigger Button 2", () => "");
+            this.KeepAliveButton3 = settings.DefineSetting(nameof(this.KeepAliveButton3), new KeyBinding(Keys.D1), () => "Trigger Button 3", () => "");
             this.KeepAliveToggleKey.Value.Enabled = true;
             this.KeepAliveToggleKey.Value.Activated += (sender, args) =>
             {
@@ -37,7 +47,8 @@ namespace BhModule.Afk
                 else module.BotService.KeepAliveTimer.Stop();
                 Utils.Notify.Show(KeepAlive.Value ? "Enable Keep Alive." : "Disable Keep Alive.");
             };
-            this.KeepAliveToggleKey.Value.Enabled = true;
+
+            this.HealButton = settings.DefineSetting(nameof(this.HealButton), new KeyBinding(Keys.F), () => "Heal Button", () => "");
         }
     }
     public class AfkSettingsView(SettingCollection settings) : View
@@ -72,6 +83,13 @@ namespace BhModule.Afk
                         HeightSizingMode = SizingMode.AutoSize,
                         Parent = rootflowPanel
                     };
+                    if(setting.EntryKey == "KeepAliveInterval" && setting is SettingEntry<int> settingInt && settingView is IntSettingView settingViewInt)
+                    {
+                        settingInt.SettingChanged += delegate
+                        {
+                            settingViewInt.DisplayName = settingInt.GetDisplayNameFunc();
+                        };
+                    }
                     if (!(settingView is SettingsView)) container.Show(settingView);
                 }
             }
