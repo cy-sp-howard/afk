@@ -20,6 +20,12 @@ namespace BhModule.Afk
         public SettingEntry<KeyBinding> KeepAliveButton1 { get; private set; }
         public SettingEntry<KeyBinding> KeepAliveButton2 { get; private set; }
         public SettingEntry<KeyBinding> KeepAliveButton3 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton4 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton5 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton6 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton7 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton8 { get; private set; }
+        public SettingEntry<KeyBinding> KeepAliveButton9 { get; private set; }
         public SettingEntry<KeyBinding> HealButton { get; private set; }
         public ModuleSettings(AfkModule module, SettingCollection settings)
         {
@@ -30,15 +36,21 @@ namespace BhModule.Afk
         {
             this.KeepAlive = settings.DefineSetting(nameof(this.KeepAlive), true, () => "Keep Character Alive.", () => "");
             this.KeepAliveInterval = settings.DefineSetting(nameof(this.KeepAliveInterval), 5, () => $"Use Skill Interval - {this.KeepAliveInterval.Value}s", () => "");
-            this.KeepAliveInterval.SetRange(3, 120);
+            this.KeepAliveInterval.SetRange(3, 60);
             this.KeepAliveInterval.SettingChanged += delegate
             {
                 module.BotService.KeepAliveTimer.Interval = this.KeepAliveInterval.Value * 1000;
             };
-            this.KeepAliveToggleKey = settings.DefineSetting(nameof(this.KeepAliveToggleKey), new KeyBinding(Keys.P), () => "Toggle Keep Alive", () => "");
-            this.KeepAliveButton1 = settings.DefineSetting(nameof(this.KeepAliveButton1), new KeyBinding(Keys.Tab), () => "Trigger Button 1", () => "");
-            this.KeepAliveButton2 = settings.DefineSetting(nameof(this.KeepAliveButton2), new KeyBinding(Keys.R), () => "Trigger Button 2", () => "");
-            this.KeepAliveButton3 = settings.DefineSetting(nameof(this.KeepAliveButton3), new KeyBinding(Keys.D1), () => "Trigger Button 3", () => "");
+            this.KeepAliveToggleKey = settings.DefineSetting(nameof(this.KeepAliveToggleKey), new KeyBinding(Keys.OemMinus), () => "Toggle Keep Alive", () => "");
+            this.KeepAliveButton1 = settings.DefineSetting(nameof(this.KeepAliveButton1), new KeyBinding(Keys.D1), () => "Trigger Button 1", () => "");
+            this.KeepAliveButton2 = settings.DefineSetting(nameof(this.KeepAliveButton2), new KeyBinding(Keys.None), () => "Trigger Button 2", () => "");
+            this.KeepAliveButton3 = settings.DefineSetting(nameof(this.KeepAliveButton3), new KeyBinding(Keys.None), () => "Trigger Button 3", () => "");
+            this.KeepAliveButton4 = settings.DefineSetting(nameof(this.KeepAliveButton4), new KeyBinding(Keys.None), () => "Trigger Button 4", () => "");
+            this.KeepAliveButton5 = settings.DefineSetting(nameof(this.KeepAliveButton5), new KeyBinding(Keys.None), () => "Trigger Button 5", () => "");
+            this.KeepAliveButton6 = settings.DefineSetting(nameof(this.KeepAliveButton6), new KeyBinding(Keys.None), () => "Trigger Button 6", () => "");
+            this.KeepAliveButton7 = settings.DefineSetting(nameof(this.KeepAliveButton7), new KeyBinding(Keys.None), () => "Trigger Button 7", () => "");
+            this.KeepAliveButton8 = settings.DefineSetting(nameof(this.KeepAliveButton8), new KeyBinding(Keys.None), () => "Trigger Button 8", () => "");
+            this.KeepAliveButton9 = settings.DefineSetting(nameof(this.KeepAliveButton9), new KeyBinding(Keys.None), () => "Trigger Button 9", () => "");
             this.KeepAliveToggleKey.Value.Enabled = true;
             this.KeepAliveToggleKey.Value.Activated += (sender, args) =>
             {
@@ -65,7 +77,7 @@ namespace BhModule.Afk
                 ControlPadding = new Vector2(5, 2),
                 OuterControlPadding = new Vector2(10, 15),
                 WidthSizingMode = SizingMode.Fill,
-                HeightSizingMode = SizingMode.Standard,
+                HeightSizingMode = SizingMode.AutoSize,
                 AutoSizePadding = new Point(0, 15),
                 Parent = buildPanel
             };
@@ -91,6 +103,7 @@ namespace BhModule.Afk
                         };
                     }
                     if (!(settingView is SettingsView)) container.Show(settingView);
+                    if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootflowPanel,Text = "Trigger In Combat",AutoSizeWidth = true };
                 }
             }
 
