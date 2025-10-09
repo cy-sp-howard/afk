@@ -56,6 +56,7 @@ namespace BhModule.Afk
 
         protected override void Unload()
         {
+            this.Settings.Unload();
             this.BotService.Unload();
         }
     }

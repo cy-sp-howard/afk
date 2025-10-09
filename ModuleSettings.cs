@@ -52,15 +52,20 @@ namespace BhModule.Afk
             this.KeepAliveButton8 = settings.DefineSetting(nameof(this.KeepAliveButton8), new KeyBinding(Keys.None), () => "Trigger Button 8", () => "");
             this.KeepAliveButton9 = settings.DefineSetting(nameof(this.KeepAliveButton9), new KeyBinding(Keys.None), () => "Trigger Button 9", () => "");
             this.KeepAliveToggleKey.Value.Enabled = true;
-            this.KeepAliveToggleKey.Value.Activated += (sender, args) =>
-            {
-                KeepAlive.Value = !KeepAlive.Value;
-                if(KeepAlive.Value) module.BotService.KeepAliveTimer.Start();
-                else module.BotService.KeepAliveTimer.Stop();
-                Utils.Notify.Show(KeepAlive.Value ? "Enable Keep Alive." : "Disable Keep Alive.");
-            };
+            this.KeepAliveToggleKey.Value.Activated += ToggleKeepAlive;
 
             this.HealButton = settings.DefineSetting(nameof(this.HealButton), new KeyBinding(Keys.F), () => "Heal Button", () => "");
+        }
+        private void ToggleKeepAlive(object sender, System.EventArgs args)
+        {
+            KeepAlive.Value = !KeepAlive.Value;
+            if (KeepAlive.Value) module.BotService.KeepAliveTimer.Start();
+            else module.BotService.KeepAliveTimer.Stop();
+            Utils.Notify.Show(KeepAlive.Value ? "Enable Keep Alive." : "Disable Keep Alive.");
+        }
+        public void Unload()
+        {
+            this.KeepAliveToggleKey.Value.Activated -= ToggleKeepAlive;
         }
     }
     public class AfkSettingsView(SettingCollection settings) : View
@@ -95,7 +100,7 @@ namespace BhModule.Afk
                         HeightSizingMode = SizingMode.AutoSize,
                         Parent = rootflowPanel
                     };
-                    if(setting.EntryKey == "KeepAliveInterval" && setting is SettingEntry<int> settingInt && settingView is IntSettingView settingViewInt)
+                    if (setting.EntryKey == "KeepAliveInterval" && setting is SettingEntry<int> settingInt && settingView is IntSettingView settingViewInt)
                     {
                         settingInt.SettingChanged += delegate
                         {
@@ -103,7 +108,7 @@ namespace BhModule.Afk
                         };
                     }
                     if (!(settingView is SettingsView)) container.Show(settingView);
-                    if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootflowPanel,Text = "Trigger In Combat",AutoSizeWidth = true };
+                    if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootflowPanel, Text = "Trigger In Combat", AutoSizeWidth = true };
                 }
             }
 
