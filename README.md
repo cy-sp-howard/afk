@@ -1,4 +1,4 @@
-# afk - Blish Module
+# afk - Blish HUD Module
 Gxxxx Wxxx 2 keep online.  
 
 ## Download
