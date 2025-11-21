@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProjectGuid>{E62E9CC2-6AB1-4837-ABB5-1C437CD85ECE}</ProjectGuid>
+    <ProjectGuid>{9CF394EC-7DB9-4C40-8B29-54ECFE7B1197}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BhModule.Afk</RootNamespace>
