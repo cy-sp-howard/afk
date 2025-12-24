@@ -1,6 +1,6 @@
 {
   "name": "Afk",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "namespace": "Away.From.Keyboard",
   "package": "Afk.dll",
   "manifest_version": 1,
