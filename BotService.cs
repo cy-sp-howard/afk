@@ -57,7 +57,7 @@ namespace BhModule.Afk
                     if (s.KeepAliveButton9.Value.PrimaryKey != 0) await Task.Delay((int)(s.KeepAliveButton9WaitTime.Value * 1000));
                 }
                 Keyboard.Stroke((VirtualKeyShort)s.KeepAliveButton1.Value.PrimaryKey);
-                Task.Delay((int)(s.KeepAliveButton1WaitTime.Value * 1000)).GetAwaiter().GetResult();
+                await Task.Delay((int)(s.KeepAliveButton1WaitTime.Value * 1000));
 
 
             };
