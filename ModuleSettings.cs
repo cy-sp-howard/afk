@@ -8,6 +8,7 @@ using Blish_HUD.Settings.UI.Views;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Linq;
 
 namespace BhModule.Afk
@@ -46,11 +47,12 @@ namespace BhModule.Afk
         private void InitUISetting(SettingCollection settings)
         {
             this.KeepAlive = settings.DefineSetting(nameof(this.KeepAlive), true, () => "Keep Character Alive.", () => "");
-            this.KeepAliveInterval = settings.DefineSetting(nameof(this.KeepAliveInterval), 5, () => $"Use Skill Interval - {this.KeepAliveInterval.Value}s", () => "");
+            this.KeepAliveInterval = settings.DefineSetting(nameof(this.KeepAliveInterval), 5, () => $"Use Skill Interval  <{this.KeepAliveInterval.Value}s>", () => "");
             this.KeepAliveInterval.SetRange(3, 60);
             this.KeepAliveInterval.SettingChanged += delegate
             {
                 module.BotService.KeepAliveTimer.Interval = this.KeepAliveInterval.Value * 1000;
+                AfkSettingsView.UpadateKeepAliveIntervalTitle();
             };
             this.KeepAliveToggleKey = settings.DefineSetting(nameof(this.KeepAliveToggleKey), new KeyBinding(Keys.OemMinus), () => "Toggle Keep Alive", () => "");
             this.KeepAliveButton1 = settings.DefineSetting(nameof(this.KeepAliveButton1), new KeyBinding(Keys.D1), () => "Trigger Button 1", () => "");
@@ -96,6 +98,7 @@ namespace BhModule.Afk
     public class AfkSettingsView(SettingCollection settings) : View
     {
         static Padding messagePadding;
+        static public Action UpadateKeepAliveIntervalTitle;
         FlowPanel rootflowPanel;
         readonly SettingCollection settings = settings;
         protected override void Build(Container buildPanel)
@@ -127,7 +130,7 @@ namespace BhModule.Afk
                     };
                     if (setting.EntryKey == "KeepAliveInterval" && setting is SettingEntry<int> settingInt && settingView is IntSettingView settingViewInt)
                     {
-                        settingInt.SettingChanged += delegate
+                        UpadateKeepAliveIntervalTitle = () =>
                         {
                             settingViewInt.DisplayName = settingInt.GetDisplayNameFunc();
                         };
