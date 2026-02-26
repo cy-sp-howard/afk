@@ -49,11 +49,7 @@ namespace BhModule.Afk
             this.KeepAlive = settings.DefineSetting(nameof(this.KeepAlive), true, () => "Keep Character Alive.", () => "");
             this.KeepAliveInterval = settings.DefineSetting(nameof(this.KeepAliveInterval), 5, () => $"Use Skill Interval  <{this.KeepAliveInterval.Value}s>", () => "");
             this.KeepAliveInterval.SetRange(3, 60);
-            this.KeepAliveInterval.SettingChanged += delegate
-            {
-                module.BotService.KeepAliveTimer.Interval = this.KeepAliveInterval.Value * 1000;
-                AfkSettingsView.UpadateKeepAliveIntervalTitle();
-            };
+            this.KeepAliveInterval.SettingChanged += OnKeepAliveIntervalChanged;
             this.KeepAliveToggleKey = settings.DefineSetting(nameof(this.KeepAliveToggleKey), new KeyBinding(Keys.OemMinus), () => "Toggle Keep Alive", () => "");
             this.KeepAliveButton1 = settings.DefineSetting(nameof(this.KeepAliveButton1), new KeyBinding(Keys.D1), () => "Trigger Button 1", () => "");
             this.KeepAliveButton2 = settings.DefineSetting(nameof(this.KeepAliveButton2), new KeyBinding(Keys.None), () => "Trigger Button 2", () => "");
@@ -79,6 +75,11 @@ namespace BhModule.Afk
             this.HealButton = settings.DefineSetting(nameof(this.HealButton), new KeyBinding(Keys.F), () => "Heal Button", () => "");
             this.HealButtonWaitTime = settings.DefineSetting(nameof(this.HealButtonWaitTime), 0.5f, () => "Heal Skill Channeling Duration (sec)", () => "");
         }
+        void OnKeepAliveIntervalChanged(object sender ,EventArgs e)
+        {
+            module.BotService.KeepAliveTimer.Interval = this.KeepAliveInterval.Value * 1000;
+            AfkSettingsView.UpadateKeepAliveIntervalTitle();
+        }
         private void ToggleKeepAlive(object sender, System.EventArgs args)
         {
             KeepAlive.Value = !KeepAlive.Value;
@@ -93,6 +94,7 @@ namespace BhModule.Afk
         public void Unload()
         {
             this.KeepAliveToggleKey.Value.Activated -= ToggleKeepAlive;
+            this.KeepAliveInterval.SettingChanged -= OnKeepAliveIntervalChanged;
         }
     }
     public class AfkSettingsView(SettingCollection settings) : View
@@ -135,7 +137,7 @@ namespace BhModule.Afk
                             settingViewInt.DisplayName = settingInt.GetDisplayNameFunc();
                         };
                     }
-                    if (!(settingView is SettingsView))
+                    if (settingView is not SettingsView)
                     {
                         container.Show(settingView);
                         if (setting.EntryKey.Contains("Button"))
@@ -216,9 +218,6 @@ namespace BhModule.Afk
                     if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootflowPanel, Text = "Trigger In Combat", Width = rootflowPanel.ContentRegion.Width };
                 }
             }
-
-            rootflowPanel.ShowBorder = true;
-            rootflowPanel.CanCollapse = true;
         }
         public static void SetMsg(string text)
         {
