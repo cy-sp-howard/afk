@@ -95,17 +95,20 @@ namespace BhModule.Afk
         {
             this.KeepAliveToggleKey.Value.Activated -= ToggleKeepAlive;
             this.KeepAliveInterval.SettingChanged -= OnKeepAliveIntervalChanged;
+            AfkSettingsView.DisposeRootFlowPanel?.Invoke();
         }
     }
     public class AfkSettingsView(SettingCollection settings) : View
     {
         static Padding messagePadding;
         static public Action UpadateKeepAliveIntervalTitle;
-        FlowPanel rootflowPanel;
+        static public Action DisposeRootFlowPanel;
+        FlowPanel rootFlowPanel;
         readonly SettingCollection settings = settings;
         protected override void Build(Container buildPanel)
         {
-            rootflowPanel = new FlowPanel()
+            DisposeRootFlowPanel?.Invoke();
+            rootFlowPanel = new FlowPanel()
             {
                 Size = buildPanel.Size,
                 FlowDirection = ControlFlowDirection.LeftToRight,
@@ -116,19 +119,24 @@ namespace BhModule.Afk
                 AutoSizePadding = new Point(0, 15),
                 Parent = buildPanel
             };
-            messagePadding = new Padding() { Parent = rootflowPanel };
+            DisposeRootFlowPanel = () =>
+            {
+                DisposeRootFlowPanel = null;
+                rootFlowPanel.Dispose();
+            };
+            messagePadding = new Padding() { Parent = rootFlowPanel };
 
             foreach (var setting in settings.Where(s => s.SessionDefined && !s.EntryKey.Contains("WaitTime")))
             {
                 IView settingView;
 
-                if ((settingView = SettingView.FromType(setting, rootflowPanel.Width)) != null)
+                if ((settingView = SettingView.FromType(setting, rootFlowPanel.Width)) != null)
                 {
                     ViewContainer container = new()
                     {
                         WidthSizingMode = SizingMode.Fill,
                         HeightSizingMode = SizingMode.AutoSize,
-                        Parent = rootflowPanel
+                        Parent = rootFlowPanel
                     };
                     if (setting.EntryKey == "KeepAliveInterval" && setting is SettingEntry<int> settingInt && settingView is IntSettingView settingViewInt)
                     {
@@ -185,7 +193,7 @@ namespace BhModule.Afk
                                     HorizontalAlignment = HorizontalAlignment.Center,
                                     Width = 100,
                                     Height = 15,
-                                    Parent = rootflowPanel,
+                                    Parent = rootFlowPanel,
                                     Text = ButtonWaitingSettingEntry.Value.ToString(),
                                     BasicTooltipText = ButtonWaitingSettingEntry.GetDisplayNameFunc(),
                                 };
@@ -211,11 +219,11 @@ namespace BhModule.Afk
                         {
                             container.Resized += (sender, e) =>
                             {
-                                container.Width = rootflowPanel.ContentRegion.Width;
+                                container.Width = rootFlowPanel.ContentRegion.Width;
                             };
                         }
                     }
-                    if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootflowPanel, Text = "Trigger In Combat", Width = rootflowPanel.ContentRegion.Width };
+                    if (setting.EntryKey == "KeepAliveButton1") new Label() { Parent = rootFlowPanel, Text = "Trigger In Combat", Width = rootFlowPanel.ContentRegion.Width };
                 }
             }
         }
