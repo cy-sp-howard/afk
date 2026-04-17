@@ -37,6 +37,9 @@ namespace BhModule.Afk
                 bool isInCombat = GameService.Gw2Mumble.PlayerCharacter.IsInCombat;
                 if (isInCombat)
                 {
+                    var scale = GameService.Graphics.UIScaleMultiplier;
+                    var screenSize = GameService.Graphics.SpriteScreen.Size;
+                    Mouse.SetPosition((int)(screenSize.X * scale / 2), (int)(screenSize.Y * scale / 2));
                     Keyboard.Stroke((VirtualKeyShort)s.HealButton.Value.PrimaryKey);
                     if (s.HealButton.Value.PrimaryKey != 0) await Task.Delay((int)(s.HealButtonWaitTime.Value * 1000));
                     Keyboard.Stroke((VirtualKeyShort)s.KeepAliveButton2.Value.PrimaryKey);
